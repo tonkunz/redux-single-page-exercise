@@ -1,3 +1,4 @@
+//Library Code
 function createStore () {
   // Store deve possuir 4 partes, sendo:
   // 1. O estado da aplicação (the State).
@@ -21,4 +22,14 @@ function createStore () {
     getState,
     subscribe
   }
-} 
+}
+
+//App Code
+
+//Função Reducer
+function todos (state = [], action) {
+  if(action.type === 'ADD_TODO'){
+    return state.concat([action.todo])
+  }
+  return state
+}
