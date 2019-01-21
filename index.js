@@ -1,5 +1,5 @@
 //Library Code
-function createStore () {
+function createStore (reducer) {
   // Store deve possuir 4 partes, sendo:
   // 1. O estado da aplicação (the State).
   // 2. Um método para obter o estado atual.
@@ -18,14 +18,20 @@ function createStore () {
     }
   }
 
+  const dispatch = (action) => {
+    state = reducer(state, action)
+    listeners.forEach(listener => listener())
+  }
+
+  //Return a object
   return {
     getState,
-    subscribe
+    subscribe,
+    dispatch
   }
 }
 
 //App Code
-
 //Função Reducer
 function todos (state = [], action) {
   if(action.type === 'ADD_TODO'){
