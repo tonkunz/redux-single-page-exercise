@@ -38,6 +38,42 @@ const TOGGLE_TODO = 'TOGGLE_TODO'
 const ADD_GOAL = 'ADD_GOAL'
 const REMOVE_GOAL = 'REMOVE_GOAL'
 
+//Action Creators
+function addTodoAction (todo) {
+  return {
+    type: ADD_TODO,
+    todo
+  }
+}
+
+function removeTodoAction (id) {
+  return {
+    type: REMOVE_TODO,
+    id
+  }
+}
+
+function toggleTodoAction (id) {
+  return {
+    type: TOGGLE_TODO,
+    id
+  }
+}
+
+function addGoalAction (goal) {
+  return {
+    type: ADD_GOAL,
+    goal
+  }
+}
+
+function removeGoalAction (id) {
+  return {
+    type: REMOVE_GOAL,
+    id
+  }
+}
+
 //Reducer functions
 function todos (state = [], action) {
   switch(action.type){
@@ -80,19 +116,36 @@ store.subscribe(() => (
   console.log('The new state is: ', store.getState())
 ))
 
-store.dispatch({
-  type : ADD_TODO,
-  todo : {
-    id: 0,
-    name: 'Learn Redux',
-    complete : false
-  }
-})
+store.dispatch(addTodoAction({
+  id: 0,
+  name: 'Lavar o carro',
+  complete: false,
+}))
 
-store.dispatch({
-  type : ADD_GOAL,
-  goal : {
-    id: 0,
-    name: 'Read a Book'
-  }
-})
+store.dispatch(addTodoAction({
+  id: 1,
+  name: 'Banhar o cão',
+  complete: false,
+}))
+
+store.dispatch(addTodoAction({
+  id: 2,
+  name: 'Ir para academia',
+  complete: true,
+}))
+
+store.dispatch(removeTodoAction(1))
+
+store.dispatch(toggleTodoAction(0))
+
+store.dispatch(addGoalAction({
+  id: 0,
+  name: 'Aprender Redux'
+}))
+
+store.dispatch(addGoalAction({
+  id: 1,
+  name: 'Aprender React Native'
+}))
+
+store.dispatch(removeGoalAction(0))
