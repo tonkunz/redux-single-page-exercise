@@ -180,11 +180,22 @@
         .addEventListener('click', addGoal)
 
 
+      function createRemoveButton (onClick) {
+        const removeBtn = document.createElement('button')
+        removeBtn.innerHTML = 'X'
+        removeBtn.addEventListener('click', onClick)
+        return removeBtn
+      }
+
       function addTodoToDOM (todo) {
         const node = document.createElement('li')
         const text = document.createTextNode(`${todo.name}`)
         if (todo.complete) node.style.textDecoration="line-through"
         node.appendChild(text)
+
+        const removeBtn = createRemoveButton(
+          () => store.dispatch(removeTodoAction(todo.id)))
+        node.appendChild(removeBtn)
         
         node.addEventListener('click', () => store.dispatch(toggleTodoAction(todo.id)))
 
@@ -196,6 +207,10 @@
         const node = document.createElement('li')
         const text = document.createTextNode(goal.name)
         node.appendChild(text)
+
+        const removeBtn = createRemoveButton(
+          () => store.dispatch(removeGoalAction(goal.id)))
+        node.appendChild(removeBtn)
 
         document.getElementById('goals')
           .appendChild(node)
