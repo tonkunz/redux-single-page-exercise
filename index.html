@@ -182,8 +182,11 @@
 
       function addTodoToDOM (todo) {
         const node = document.createElement('li')
-        const text = document.createTextNode(todo.name)
+        const text = document.createTextNode(`${todo.name}`)
+        if (todo.complete) node.style.textDecoration="line-through"
         node.appendChild(text)
+        
+        node.addEventListener('click', () => store.dispatch(toggleTodoAction(todo.id)))
 
         document.getElementById('todos')
           .appendChild(node)
