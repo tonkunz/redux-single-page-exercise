@@ -6,12 +6,12 @@
   <body>
     <div>
         <h1>Lista de Afazeres</h1>
-        <input id="todo" type="text" placeholder="Digite o item"/>
-        <button id="todoBtn" >Adicionar Item</button>
+        <input id="todo" type="text" placeholder="Digite seu afazer"/>
+        <button id="todoBtn" >Adicionar Afazer</button>
         <ul id="todos"></ul>
     </div>
     <div>
-        <h1>Metas</h1>
+        <h1>Lista de Metas</h1>
         <input id="goal" type="text" placeholder="Digite sua meta"/>
         <button id="goalBtn">Adicionar Meta</button>
         <ul id="goals"></ul>
@@ -136,11 +136,19 @@
       //Code test
       const store = createStore(app)
 
-      store.subscribe(() => (
-        console.log('The new state is: ', store.getState())
-      ))
+      store.subscribe(() => {
+        //Destructuring ES6
+        const {goals, todos} = store.getState()
 
-      //Função para adicionar um Todo pela UI
+        //Reset all <li> in 'goals' and 'todos'
+        document.getElementById('goals').innerHTML = ''
+        document.getElementById('todos').innerHTML = ''
+
+        goals.forEach(addGoalToDOM)
+        todos.forEach(addTodoToDOM)
+      })
+
+      //DOM Manipulators
       function addTodo () {
         const input = document.getElementById('todo')
         const name = input.value
@@ -153,7 +161,6 @@
         }))
       }
 
-      //Função para adicionar um Goal pela UI
       function addGoal () {
         const input = document.getElementById('goal')
         const name = input.value
@@ -171,6 +178,26 @@
 
       document.getElementById('goalBtn')
         .addEventListener('click', addGoal)
+
+
+      function addTodoToDOM (todo) {
+        const node = document.createElement('li')
+        const text = document.createTextNode(todo.name)
+        node.appendChild(text)
+
+        document.getElementById('todos')
+          .appendChild(node)
+      }
+
+      function addGoalToDOM (goal) {
+        const node = document.createElement('li')
+        const text = document.createTextNode(goal.name)
+        node.appendChild(text)
+
+        document.getElementById('goals')
+          .appendChild(node)
+      }
+
     </script>
   </body>
 </html>
