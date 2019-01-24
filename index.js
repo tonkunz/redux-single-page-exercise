@@ -1,3 +1,6 @@
+//Legacy Code
+// Este arquivo contêm o ínicio do projeto onde o objetivo foi criar manualmente nossa "biblioteca Redux"
+
 //Library Code
 function createStore (reducer) {
   // Store deve possuir 4 partes, sendo:
