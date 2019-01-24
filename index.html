@@ -3,6 +3,9 @@
   <head>
     <title>Redux Todos Goals</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/3.7.2/redux.min.js"></script>
+    <script src="https://unpkg.com/react@16.3.0-alpha.1/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16.3.0-alpha.1/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
   </head>
   <body>
     <div>
@@ -17,6 +20,9 @@
         <button id="goalBtn">Adicionar Meta</button>
         <ul id="goals"></ul>
     </div>
+
+    <hr />
+    <div id="app"></div>
 
     <script type="text/javascript">
       //Helper Function: ID Generator
@@ -210,7 +216,129 @@
         document.getElementById('goals')
           .appendChild(node)
       }
+    </script>
 
+    <script type='text/babel'>
+      function List(props) {
+        return (
+          <ul>
+            {props.items.map(item => (
+              <li key={item.id}>
+                <span
+                  onClick={() => props.toggleItem && props.toggleItem(item.id)}
+                  style={{textDecoration: item.complete ? 'line-through' : 'none'}}
+                >
+                  {item.name}
+                </span>
+                <button onClick={() => props.removeItem(item)}>
+                  X
+                </button>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+
+      class Todos extends React.Component {
+        addItem = event => {
+          event.preventDefault()
+          const name = this.input.value
+          this.input.value = ''
+
+          this.props.store.dispatch(addTodoAction({
+            name,
+            complete: false,
+            id: generateID()
+          }))
+        }
+
+        removeItem = todo => {
+          this.props.store.dispatch(removeTodoAction(todo.id))
+        }
+
+        toggleItem = id => {
+          this.props.store.dispatch(toggleTodoAction(id))
+        }
+
+        render() {
+          return (
+            <div>
+              <h1>Lista de Afazeres</h1>
+              <input
+                id='todo'
+                type='text'
+                placeholder='Digite seu afazer'
+                ref={input => this.input = input}                
+              />
+              <button onClick={this.addItem}>Adicionar Afazer</button>
+              <List
+                toggleItem={this.toggleItem}
+                removeItem={this.removeItem}
+                items={this.props.todos}
+              />
+            </div>
+          )
+        }
+      }
+
+      class Goals extends React.Component {
+        addItem = event => {
+          event.preventDefault()
+          const name = this.input.value
+          this.input.value = ''
+
+          this.props.store.dispatch(addGoalAction({
+            name,
+            id: generateID()
+          }))
+        }
+
+        removeItem = goal => {
+          this.props.store.dispatch(removeGoalAction(goal.id))
+        }
+
+        render() {
+          return (
+            <div>
+              <h1>Lista de Metas</h1>
+              <input
+                id='goals'
+                type='text'
+                placeholder='Digite sua meta'
+                ref={input => this.input = input}
+              />
+              <button onClick={this.addItem}>Adicionar Meta</button>
+              <List
+                removeItem={this.removeItem}
+                items={this.props.goals}
+              />
+            </div>
+          )
+        }
+      }
+
+      class App extends React.Component {
+        componentDidMount() {
+          const { store } = this.props
+
+          store.subscribe(() => this.forceUpdate())
+        }
+
+        render() {
+          const { todos, goals} = store.getState()
+          return (
+            <div>
+              <Todos todos={todos} store={this.props.store}/>
+              <Goals goals={goals} store={this.props.store}/>
+            </div>
+          )
+        }
+      }
+
+      ReactDOM.render(
+        <App store={store} />,
+        document.getElementById('app')
+      )
     </script>
   </body>
 </html>
