@@ -114,11 +114,22 @@
         }
       }
 
+      //"Real World" use of Middleware
+      const logger = store => next => action => {
+        console.group(action.type)
+          console.log('Action:', action)
+          result = next(action) //Invoca o dispatch
+          console.log('O novo estado', store.getState())
+        console.groupEnd()
+        return result
+      }
+
       //Code test
+      //const store = Redux.createStore( <reducer-function>, <middleware-functions> )
       const store = Redux.createStore(Redux.combineReducers({
         todos,
         goals
-      }), Redux.applyMiddleware(checker))
+      }), Redux.applyMiddleware(checker, logger))
 
       store.subscribe(() => {
         //Destructuring ES6
