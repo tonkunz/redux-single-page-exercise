@@ -69,6 +69,33 @@
         }
       }
 
+      function handleInitialData(){
+        return dispatch => {
+          return Promise.all([
+            API.fetchTodos(),
+            API.fetchGoals()
+          ]).then(([todos, goals]) => {
+            dispatch(receiveDataAction(
+              todos,
+              goals
+            ))
+          })
+        }
+      }
+
+      function handleAddTodo (name, resetValue) {
+        return dispatch => {
+         return API.saveTodo(name)
+            .then((todo) => {
+              dispatch(addTodoAction(todo))
+              resetValue()
+            })
+            .catch(() => {
+              alert('Erro ao adicionar, tente novamente!')
+            })
+        }
+      }
+
       function handleDeleteTodo (todo) {
         return (dispatch) => {
           dispatch(removeTodoAction(todo.id))
@@ -79,7 +106,41 @@
               alert('Um erro ocorreu, tente novamente!')
             }) 
         }
+      }
 
+      function handleToggle (id) {
+        return dispatch => {
+          dispatch(toggleTodoAction(id))
+
+          return API.saveTodoToggle(id)
+            .catch(() => {
+              dispatch(toggleTodoAction(id))
+              alert('Não foi possível trocar o valor de Complete! Tente novamente mais tarde.')
+            })
+        }
+      }
+
+      function handleAddGoal (name, resetValue) {
+        return (dispatch) => {
+          return API.saveGoal(name)
+            .then((goal) => {
+              dispatch(addGoalAction(goal))
+              resetValue()
+            })
+            .catch(() => alert('Erro ao adicionar meta, tente novamente!'))
+        }
+      }
+
+      function handleDeleteGoal (goal) {
+        return (dispatch) => {
+          dispatch(removeGoalAction(goal.id))
+
+          return API.deleteGoal(goal.id)
+            .catch(() => {
+              dispatch(addGoalAction(goal))
+              alert('Não foi possível excluir o afazer na base de dados. Por favor, tente novamente mais tarde!')
+            })
+        }
       }
 
       //Reducer functions
@@ -185,13 +246,10 @@
       class Todos extends React.Component {
         addItem = event => {
           event.preventDefault()
-          
-          return API.saveTodo(this.input.value)
-            .then((todo) => {
-              this.props.store.dispatch(addTodoAction(todo))
-              this.input.value = ''
-            })
-            .catch(() => alert('Erro ao adicionar, tente novamente!'))
+          this.props.store.dispatch(handleAddTodo(
+            this.input.value,
+            () => this.input.value = ''
+          ))
         }
 
         removeItem = todo => {
@@ -199,13 +257,7 @@
         }
 
         toggleItem = id => {
-          this.props.store.dispatch(toggleTodoAction(id))
-
-          return API.saveTodoToggle(id)
-            .catch(() => {
-              this.props.store.dispatch(toggleTodoAction(id))
-              alert('Não foi possível trocar o valor de Complete! Tente novamente mais tarde.')
-            })
+          this.props.store.dispatch(handleToggle(id))
         }
 
         render() {
@@ -232,23 +284,14 @@
       class Goals extends React.Component {
         addItem = event => {
           event.preventDefault()
-          
-          return API.saveGoal(this.input.value)
-            .then((goal) => {
-              this.props.store.dispatch(addGoalAction(goal))
-              this.input.value = ''
-            })
-            .catch(() => alert('Erro ao adicionar meta, tente novamente!'))
+          this.props.store.dispatch(handleAddGoal(
+            this.input.value,
+            () => this.input.value = ''
+          ))
         }
 
         removeItem = goal => {
-          this.props.store.dispatch(removeGoalAction(goal.id))
-
-          return API.deleteGoal(goal.id)
-            .catch(() => {
-              this.props.store.dispatch(addGoalAction(goal))
-              alert('Não foi possível excluir o afazer na base de dados. Por favor, tente novamente mais tarde!')
-            })
+          this.props.store.dispatch(handleDeleteGoal(goal))
         }
 
         render() {
@@ -275,15 +318,7 @@
         componentDidMount() {
           const { store } = this.props
 
-          Promise.all([
-            API.fetchTodos(),
-            API.fetchGoals()
-          ]).then(([todos, goals]) => {
-            store.dispatch(receiveDataAction(
-              todos,
-              goals
-            ))
-          })
+          store.dispatch(handleInitialData())
 
           store.subscribe(() => this.forceUpdate())
         }
